@@ -77,7 +77,7 @@ while True:
     tp_len = packet_len
     tp_snaplen = packet_len
     struct.pack_into('III',mm,i*frame_size,tp_status,tp_len,tp_snaplen)
-    struct.pack_into('60s',mm,i*frame_size+52,tmp_packet)
+    struct.pack_into('60s',mm,i*frame_size+32,tmp_packet)
     i = (i + 1) % frame_nr
 mm.close()
 sock.close()
