@@ -3,6 +3,7 @@ import mmap
 import ctypes
 import struct
 import select
+import dpkt.pcap as dpcap
 
 block_size = 1 << 22 
 frame_size = 1 << 11 
@@ -86,6 +87,8 @@ i = 0
 # bdesc = block_desc.from_buffer_copy(mm)
 TP_STATUS_USER = 1 << 0 
 TP_STATUS_KERNEL = 0
+fpcap = open("./tmp.pcap",'wb')
+fwrite = dpcap.Writer(fpcap)
 
 def display(bdesc:object,length:int):
     pkt_nums = bdesc.num_pkts
@@ -96,7 +99,8 @@ def display(bdesc:object,length:int):
         one = socket.ntohs(eth.h_proto)
         print(eth.h_dest[0],eth.h_dest[1],eth.h_dest[2],eth.h_dest[3],eth.h_dest[4],eth.h_dest[5])
         print(eth.h_source[0],eth.h_source[1],eth.h_source[2],eth.h_source[3],eth.h_source[4],eth.h_source[5])
-
+        pkt_tmp = mm[tmp+th3.tp_mac:tmp+th3.tp_mac+th3.tp_snaplen]
+        fwrite.writepkt(pkt_tmp)
         print(one,0x0800)
         tmp = tmp + th3.tp_next_offset
         th3 = tpacket3_hdr.from_buffer(mm,tmp)
@@ -113,6 +117,6 @@ while True:
     del bdesc
     i = i + 1
     i = i % block_num
-
+fwrite.close()
 mm.close()
 sock.close()
