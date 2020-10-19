@@ -3,6 +3,15 @@ from netsuit.pcap.pcap import Writer
 from dpkt.ethernet import Ethernet
 from multiprocessing import Process,Pipe
 import time
+fpcap = open("./tmp.pcap",'wb')
+fwrite = Writer(fpcap)
+sock =rxRawSocket("vboxnet0")
+i = 0
+for packet in sock.rx_fast_packets():
+    fwrite.writepkt(packet)
+    i += 1
+    print("num:  %d" % i)
+    
 parent_conn, child_conn = Pipe()
 fpcap = open("./tmp.pcap",'wb')
 fwrite = Writer(fpcap)
@@ -26,7 +35,7 @@ sock = rxRawSocket("vboxnet0")
 i = 0
 # getPack = sock.rx_packets()
 for packet in sock.rx_packets(None):
-#     fwrite.writepkt(packet)
+    fwrite.writepkt(packet)
     i += 1
     print("num:  %d" % i)
 
